@@ -9,3 +9,11 @@
 ### Product Rule
 
 P( a ^ b ) = P( A | B )P( B )
+
+
+
+# Chapter 16
+
+![](imgs/1.png)
+![](imgs/2.png)
+![](imgs/3.png)
