@@ -19,4 +19,4 @@ P( a ^ b ) = P( A | B )P( B )
 ![](imgs/3.png)
 
 # Chapter 18/20 Neural Networks 
-
+![](imgs/4.png)
