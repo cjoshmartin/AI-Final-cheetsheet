@@ -20,3 +20,6 @@ P( a ^ b ) = P( A | B )P( B )
 
 # Chapter 18/20 Neural Networks 
 ![](imgs/4.png)
+
+Backpropagation Algo Steps
+![](imgs/5.png)
