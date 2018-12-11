@@ -1,4 +1,16 @@
 
+# 8 Piece Puzzle
+
+* TODO 
+
+## Arc 
+
+* TODO 
+
+## Wampous world
+
+* TODO 
+
 
 ## Chapter 13
 
@@ -30,8 +42,6 @@ $$=\sum_{B}^{\infty}\sum_{M}^{\infty}\sum_{E}^{\infty} \frac{P(b,e,j,m)}{P(a)}$$
 
 ## Evaluation Tree
 
-**Don't fully understand**
-
 ![](imgs/8.png)
 ![](imgs/9.png)
 
@@ -39,10 +49,6 @@ $$=\sum_{B}^{\infty}\sum_{M}^{\infty}\sum_{E}^{\infty} \frac{P(b,e,j,m)}{P(a)}$$
 https://github.com/random-forests/tutorials/blob/master/decision_tree.ipynb
 https://github.com/random-forests/tutorials/blob/master/decision_tree.py
 
-# Chapter 16
-
-![](imgs/1.png)
-![](imgs/2.png)
 
 ## Decision Tree
 
@@ -111,6 +117,12 @@ def DecisionTreeLearner(dataset):
 
     return decision_tree_learning(dataset.examples, dataset.inputs)
 ```
+
+
+# Chapter 16
+
+![](imgs/1.png)
+![](imgs/2.png)
 
 # Chapter 18/20 Neural Networks 
 
