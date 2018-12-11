@@ -10,7 +10,7 @@
 
 P( a ^ b ) = P( A | B )P( B )
 
-<!--![](imgs/5.png)-->
+![](imgs/5\(1\).png)
 
 ![](imgs/6.png)
 
@@ -122,6 +122,7 @@ def DecisionTreeLearner(dataset):
 
 ![Backpropagation Algo Steps](imgs/5.png)
 
+![](imgs/10.png)
 
 ## Network 
 
