@@ -23,6 +23,7 @@ Given, the following:
 
 P( B, E, A, J, M ) = P( J | A )P( M | A )P( A | E, B )P( B )P( E )
 
+
 Find P( J | A )? 
 
 $$=\sum_{B}^{\infty}\sum_{M}^{\infty}\sum_{E}^{\infty} \frac{P(b,e,j,m)}{P(a)}$$
@@ -33,6 +34,10 @@ $$=\sum_{B}^{\infty}\sum_{M}^{\infty}\sum_{E}^{\infty} \frac{P(b,e,j,m)}{P(a)}$$
 
 ![](imgs/8.png)
 ![](imgs/9.png)
+
+# Chapter 14 - Decision Trees
+https://github.com/random-forests/tutorials/blob/master/decision_tree.ipynb
+https://github.com/random-forests/tutorials/blob/master/decision_tree.py
 
 # Chapter 16
 
@@ -48,6 +53,7 @@ $$=\sum_{B}^{\infty}\sum_{M}^{\infty}\sum_{E}^{\infty} \frac{P(b,e,j,m)}{P(a)}$$
 
 Backpropagation Algo Steps
 ![](imgs/5.png)
+
 
 ### Example 1
 
@@ -234,4 +240,6 @@ for epoch in range(epochs):
     return net
 ```
 
-    
+https://www.bogotobogo.com/python/python_Neural_Networks_Backpropagation_for_XOR_using_one_hidden_layer.php
+https://www.bogotobogo.com/python/files/NeuralNetworks/nn3.py
+
