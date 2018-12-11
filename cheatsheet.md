@@ -266,6 +266,21 @@ def sigmoid(z):
 def sigmoid_prime(z):
     """Derivative of the sigmoid function."""
     return sigmoid(z)*(1-sigmoid(z))
+
+
+def main():
+     net = network.Network([
+     784, # input layer
+     30, # hidden layer
+     10  # Output layer
+     ])
+     net.SGD(
+     training_data, 
+     30, # epochs
+     10, # Batch size 
+     100.0, # learning rate (eta)
+     test_data=test_data
+     )
 ```
 
 https://www.bogotobogo.com/python/python_Neural_Networks_Backpropagation_for_XOR_using_one_hidden_layer.php
