@@ -10,7 +10,7 @@
 
 P( a ^ b ) = P( A | B )P( B )
 
-![](imgs/5.png)
+<!--![](imgs/5.png)-->
 
 ![](imgs/6.png)
 
@@ -47,13 +47,6 @@ https://github.com/random-forests/tutorials/blob/master/decision_tree.py
 ## Decision Tree
 
 ![](imgs/3.png)
-
-# Chapter 18/20 Neural Networks 
-![](imgs/4.png)
-
-Backpropagation Algo Steps
-![](imgs/5.png)
-
 
 ### Example 1
 
@@ -119,15 +112,18 @@ def DecisionTreeLearner(dataset):
     return decision_tree_learning(dataset.examples, dataset.inputs)
 ```
 
-# Chapter 18 
+# Chapter 18/20 Neural Networks 
 
 ## Entropy 
 
     idk man
 
-## Back-Propagation 
-
 ![](imgs/4.png)
+
+![Backpropagation Algo Steps](imgs/5.png)
+
+
+## Back-Propagation 
 
 ```python
 def BackPropagationLearner(dataset, net, learning_rate, epochs, activation=sigmoid):
