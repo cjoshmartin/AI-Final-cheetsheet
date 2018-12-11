@@ -23,3 +23,4 @@ P( a ^ b ) = P( A | B )P( B )
 
 Backpropagation Algo Steps
 ![](imgs/5.png)
+https://www.bogotobogo.com/python/files/NeuralNetworks/nn3.py
