@@ -136,10 +136,10 @@ def DecisionTreeLearner(dataset):
 ```
 
 
-# Chapter 16
+<!--# Chapter 16-->
 
-![](imgs/1.png)
-![](imgs/2.png)
+<!--![](imgs/1.png)-->
+<!--![](imgs/2.png)-->
 
 # Chapter 18/20 Neural Networks 
 
