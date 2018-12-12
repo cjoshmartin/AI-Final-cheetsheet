@@ -52,15 +52,32 @@ https://github.com/random-forests/tutorials/blob/master/decision_tree.py
 
 ## Decision Tree
 
-![](imgs/3.png)
+<!--![](imgs/3.png)-->
 
-### Example 1
 
+### Example 1 - Utils 
+
+```python 
+identity = lambda x: x
+
+def argmax_random_tie(seq, key=identity):
+    """Return an element with highest fn(seq[i]) score; break ties at random."""
+    return max(shuffled(seq), key=key)
+
+def shuffled(iterable):
+    """Randomly shuffle a copy of iterable."""
+    items = list(iterable)
+    random.shuffle(items)
+    return items
+
+```
+
+### Example 1 - Main Code
+
+![](imgs/josh_11.png)
 
 ```python 
 def DecisionTreeLearner(dataset):
-    """[Figure 18.5]"""
-
     target, values = dataset.target, dataset.values
 
     def decision_tree_learning(examples, attrs, parent_examples=()):
