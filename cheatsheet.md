@@ -117,15 +117,15 @@ def DecisionTreeLearner(dataset):
         return argmax_random_tie(attrs,
                                  key=lambda a: information_gain(a, examples))
 
-    def information_gain(attr, examples):
+    def information_gain(attr, examples): # Entropy
         """Return the expected reduction in entropy from splitting by attr."""
-        def I(examples):
+        def J(examples):
             return information_content([count(target, v, examples)
                                         for v in values[target]])
         N = len(examples)
-        remainder = sum((len(examples_i)/N) * I(examples_i)
+        remainder = sum((len(examples_i)/N) * B(examples_i)
                         for (v, examples_i) in split_by(attr, examples))
-        return I(examples) - remainder
+        return B(examples) - remainder
 
     def split_by(attr, examples):
         """Return a list of (val, examples) pairs for each val of attr."""
@@ -145,7 +145,17 @@ def DecisionTreeLearner(dataset):
 
 ## Entropy 
 
-    idk man
+```python
+    def information_gain(attr, examples): # Entropy
+        """Return the expected reduction in entropy from splitting by attr."""
+        def J(examples):
+            return information_content([count(target, v, examples)
+                                        for v in values[target]])
+        N = len(examples)
+        remainder = sum((len(examples_i)/N) * B(examples_i)
+                        for (v, examples_i) in split_by(attr, examples))
+        return B(examples) - remainder
+```
 
 ![](imgs/4.png)
 
