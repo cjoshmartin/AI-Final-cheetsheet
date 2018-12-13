@@ -1,4 +1,512 @@
 
+
+# Chapter 3
+
+## Breath First Search
+
+```python 
+from queue import Queue
+
+from utils.Node import letterTree, letterGraph
+
+
+def breath_first_search(goal, node):
+    path_queue = Queue()
+    has_seen = set()
+
+    path_queue.put(node)
+    while not path_queue.empty():
+        next_node =path_queue.get()
+
+        if next_node.value == goal:
+            return True
+
+        if next_node.value in has_seen:
+            continue
+
+        has_seen.add(next_node.value)
+        print(next_node.value)
+        if next_node.children is None:
+            continue
+
+        for child_node in next_node.children:
+            path_queue.put(child_node)
+
+    return False
+
+
+
+print('Tree:: {}'.format(breath_first_search('G', letterTree())))
+
+graph = letterGraph()
+print('Graph:: {}'.format(breath_first_search('K', graph)))
+```
+
+## Depth Limited Search
+
+```python 
+from utils.Node import letterTree
+
+
+def depth_limited_search_r(problem, goal, limit):
+    if problem.value == goal:
+        return True
+
+    elif problem.depth == limit:
+        return 'cutoff'
+    else:
+        cutoff_occurred = False
+        for child in problem.children:
+            result = depth_limited_search_r(child, goal, limit)
+            if result == 'cutoff':
+                cutoff_occurred = True
+            elif result is not None:
+                return result
+
+        return 'cutoff' if cutoff_occurred else None
+
+
+def depth_limited_search(head, goal, limit):
+    depth = 0
+    return depth_limited_search_r(head, goal, limit)
+
+
+tree = letterTree()
+
+print('{}'.format(depth_limited_search(tree, '4', 2)))
+```
+
+## Iterative Deepening Search 
+
+```Python 
+import sys
+
+from depth_limited_search import depth_limited_search
+
+from utils.Tree import letterTree
+
+
+def iterative_deepening_search(tree, goal):
+
+    for depth in range(sys.maxsize):
+        result =  depth_limited_search(tree, goal, depth)
+        if result is not 'cutoff':
+            return result
+
+tree = letterTree()
+print('{}'.format(iterative_deepening_search(tree, 'Q')))
+```
+
+## Greedy Best First
+
+```python 
+from utils.Graph import mapGraphWithCost
+from utils.general import get_city_name, start_line_distances
+from utils.priority_queue import priority_queue
+
+
+def success(stack):
+    output = ''
+    while len(stack) > 0:
+        city = stack.pop()
+        output = '{} -> {}'.format(city, output)
+    return output
+
+
+def greedy_best_first(start, goal):
+    def queue_structure(node, distance):
+        return {'node': node, 'distance': distance}
+
+    frontier = priority_queue('distance')
+    path = []
+    lookup_table = start_line_distances()
+    frontier.enqueue(queue_structure(start, lookup_table[get_city_name(start)]))
+
+    while frontier.size() > 0:
+        current_object = frontier.dequeue()
+        current = current_object['node']
+        city = get_city_name(current)
+
+        path.append(city)
+
+        if city == goal:
+            return success(path)
+
+        if not current.is_leaf():
+            for child in current.children:
+                child['distance'] = lookup_table[city]
+                frontier.enqueue(child)
+
+    return 'Failure'
+
+
+graph = mapGraphWithCost()
+path = greedy_best_first(graph, 'Bucharest')
+print(path)
+```
+
+## Uniform Cost
+
+```python 
+from utils.Graph import mapGraphWithCost
+from utils.general import get_city_name, calculate_cost
+from utils.priority_queue import priority_queue
+
+
+def success(startNode, goal, dict):
+    dictKey = goal
+    output = goal
+
+    while dictKey != startNode.value:
+        dictKey = dict[dictKey]
+        output = '{} -> {}'.format(dictKey, output)
+
+    return output
+
+
+def uniform_cost_search(start, goal):
+    path_cost = 0
+    frontier = priority_queue()
+    explored = set()
+    path = {}
+
+    frontier.enqueue({'node': start, 'distance': 0, 'cost': 0})
+
+    while frontier.size() > 0:
+
+        current_object = frontier.dequeue()
+        current = current_object['node']
+        path_cost = calculate_cost([path_cost, current_object['distance']])
+        city = get_city_name(current)
+
+        if city == goal:
+            return success(start, goal, path)
+
+        explored.add(city)
+        if not current.is_leaf():
+            for child in current.children:
+                child_city = get_city_name(child['node'])
+                if child not in frontier.queue and child_city not in explored:
+                    cost = calculate_cost([path_cost, child['distance']])
+                    if cost < child['cost']:
+                        child['cost'] = cost
+                        path[child_city] = city
+                    frontier.enqueue(child)
+
+    return 'failure'
+
+
+for goal in ['Bucharest', 'Neamt', 'JOSH']:
+    path = uniform_cost_search(mapGraphWithCost(), goal)
+    print(path)
+```
+
+## A* Search 
+
+```python 
+from utils.Graph import mapGraphWithCost
+from utils.general import get_city_name, start_line_distances, calculate_cost
+from utils.priority_queue import priority_queue
+
+def success(startNode, goal, dict):
+    dictKey = goal
+    output = goal
+
+    while dictKey != startNode.value:
+        dictKey = dict[dictKey]
+        output = '{} -> {}'.format(dictKey, output)
+
+    return output
+
+
+def a_star_search(start, goal):
+    frontier = priority_queue()
+    possiable_moves = {}
+    lookup_table = start_line_distances()
+    explored = set()
+    path_cost = 0
+    frontier.enqueue(
+     {
+        'node': start, 
+        'distance': 0, 
+        'cost': lookup_table[get_city_name(start)]
+     }
+    )
+
+    while frontier.size() > 0:
+
+        current_object = frontier.dequeue()
+        current = current_object['node']
+        city = get_city_name(current)
+        path_cost = calculate_cost(
+            [
+                path_cost, 
+                current_object['distance'], 
+                lookup_table[city]
+            ]
+        )
+
+
+        if city == goal :
+            return success(start,goal, possiable_moves)
+
+        explored.add(city)
+        if not current.is_leaf():
+            for child in current.children:
+                child_city = get_city_name(child['node'])
+                if child not in frontier.queue and child_city not in explored:
+                    cost = calculate_cost(
+                        [
+                            path_cost, 
+                            child['distance'], 
+                            lookup_table[city]
+                        ]
+                    )
+                    if cost < child['cost']:
+                        child['cost'] = cost
+                        possiable_moves[child_city] = city
+                    frontier.enqueue(child)
+
+    return 'Failure'
+
+goal = 'Bucharest'
+path = a_star_search(mapGraphWithCost(), goal)
+print(path)
+```
+
+# Chapter 4 
+
+## Genetic Algorithm
+
+### Example 1
+```go 
+func GeneticAlgorithm(population, Fitness) returns an individual
+    while(1)
+   	 new_population = empty set
+   	 for i = 1 to SIZE(population)
+   		 x = Random-Selection(Population, Fitness)
+   		 y = Random-Selection(Population, Fitness)
+   		 child = Reproduce(x, y)
+   		 if (small random probability)
+   			 child = Mutute(child)
+   		 new_population.Insert(child)
+   	 population = new_population
+   	 if top fitness member of population > threshold
+   		 exit
+   	 else if epochs > max_epochs
+   		 exit
+    end
+    return top fitness member of population
+
+func Reproduce(individual x, y) returns individual
+    n = Length(x)
+    c = rand(1, n)
+    return Append(Substring(x, 1, c), Substring(y, c+1, n))
+```
+
+### Example 2 
+
+```python 
+import random
+
+#
+# Global variables
+# Setup optimal string and GA input variables.
+#
+
+OPTIMAL     = "Hello, World"
+DNA_SIZE    = len(OPTIMAL)
+POP_SIZE    = 20
+GENERATIONS = 5000
+
+#
+# Helper functions
+# These are used as support, but aren't direct GA-specific functions.
+#
+
+def weighted_choice(items):
+  """
+  Chooses a random element from items, where items is a list of tuples in
+  the form (item, weight). weight determines the probability of choosing its
+  respective item. Note: this function is borrowed from ActiveState Recipes.
+  """
+  weight_total = sum((item[1] for item in items))
+  n = random.uniform(0, weight_total)
+  for item, weight in items:
+    if n < weight:
+      return item
+    n = n - weight
+  return item
+
+def random_char():
+  """
+  Return a random character between ASCII 32 and 126 (i.e. spaces, symbols,
+  letters, and digits). All characters returned will be nicely printable.
+  """
+  return chr(int(random.randrange(32, 126, 1)))
+
+def random_population():
+  """
+  Return a list of POP_SIZE individuals, each randomly generated via iterating
+  DNA_SIZE times to generate a string of random characters with random_char().
+  """
+  pop = []
+  for i in xrange(POP_SIZE):
+    dna = ""
+    for c in xrange(DNA_SIZE):
+      dna += random_char()
+    pop.append(dna)
+  return pop
+
+#
+# GA functions
+# These make up the bulk of the actual GA algorithm.
+#
+
+def fitness(dna):
+  """
+  For each gene in the DNA, this function calculates the difference between
+  it and the character in the same position in the OPTIMAL string. These values
+  are summed and then returned.
+  """
+  fitness = 0
+  for c in xrange(DNA_SIZE):
+    fitness += abs(ord(dna[c]) - ord(OPTIMAL[c]))
+  return fitness
+
+def mutate(dna):
+  """
+  For each gene in the DNA, there is a 1/mutation_chance chance that it will be
+  switched out with a random character. This ensures diversity in the
+  population, and ensures that is difficult to get stuck in local minima.
+  """
+  dna_out = ""
+  mutation_chance = 100
+  for c in xrange(DNA_SIZE):
+    if int(random.random()*mutation_chance) == 1:
+      dna_out += random_char()
+    else:
+      dna_out += dna[c]
+  return dna_out
+
+def crossover(dna1, dna2):
+  """
+  Slices both dna1 and dna2 into two parts at a random index within their
+  length and merges them. Both keep their initial sublist up to the crossover
+  index, but their ends are swapped.
+  """
+  pos = int(random.random()*DNA_SIZE)
+  return (dna1[:pos]+dna2[pos:], dna2[:pos]+dna1[pos:])
+
+#
+# Main driver
+# Generate a population and simulate GENERATIONS generations.
+#
+
+if __name__ == "__main__":
+  # Generate initial population. This will create a list of POP_SIZE strings,
+  # each initialized to a sequence of random characters.
+  population = random_population()
+
+  # Simulate all of the generations.
+  for generation in xrange(GENERATIONS):
+    print "Generation %s... Random sample: '%s'" % (generation, population[0])
+    weighted_population = []
+
+    # Add individuals and their respective fitness levels to the weighted
+    # population list. This will be used to pull out individuals via certain
+    # probabilities during the selection phase. Then, reset the population list
+    # so we can repopulate it after selection.
+    for individual in population:
+      fitness_val = fitness(individual)
+
+      # Generate the (individual,fitness) pair, taking in account whether or
+      # not we will accidently divide by zero.
+      if fitness_val == 0:
+        pair = (individual, 1.0)
+      else:
+        pair = (individual, 1.0/fitness_val)
+
+      weighted_population.append(pair)
+
+    population = []
+
+    # Select two random individuals, based on their fitness probabilites, cross
+    # their genes over at a random point, mutate them, and add them back to the
+    # population for the next iteration.
+    for _ in xrange(POP_SIZE/2):
+      # Selection
+      ind1 = weighted_choice(weighted_population)
+      ind2 = weighted_choice(weighted_population)
+
+      # Crossover
+      ind1, ind2 = crossover(ind1, ind2)
+
+      # Mutate and add back into the population.
+      population.append(mutate(ind1))
+      population.append(mutate(ind2))
+
+  # Display the highest-ranked string after all generations have been iterated
+  # over. This will be the closest string to the OPTIMAL string, meaning it
+  # will have the smallest fitness value. Finally, exit the program.
+  fittest_string = population[0]
+  minimum_fitness = fitness(population[0])
+
+  for individual in population:
+    ind_fitness = fitness(individual)
+    if ind_fitness <= minimum_fitness:
+      fittest_string = individual
+      minimum_fitness = ind_fitness
+
+  print "Fittest String: %s" % fittest_string
+  exit(0)
+```
+
+## Queens.py
+
+```python 
+import random
+
+def queen_placement(size):
+    return random.randint(0, size - 1)
+
+
+def n_sized_board(size):
+    board = []
+    for n in range(size):
+        board.append(queen_placement(size))
+
+    return board
+
+
+def is_attacking(r1, c1, r2, c2):
+    if r1 == r2:
+        return True
+    if c1 == c2:
+        return True
+
+    diagonal = (c2 - c1) / (r2 - r1)
+
+    if abs(diagonal) == 1:
+        return True
+
+
+def h(board):
+    size = len(board)
+    attacking = 0
+
+    for i in range(size):
+        for j in range(size):
+            if is_attacking(board[j], j, board[i], i):
+                attacking = attacking + 1
+    attacking = attacking - size  # remove self attacks
+    attacking = attacking / 2  # counting for overlinks
+
+    return attacking
+```
+
+
+
 # 8 Piece Puzzle
 
 * TODO 
@@ -45,6 +553,68 @@ $$=\sum_{B}^{\infty}\sum_{M}^{\infty}\sum_{E}^{\infty} \frac{P(b,e,j,m)}{P(a)}$$
 ![](imgs/8.png)
 ![](imgs/9.png)
 
+### Code
+```go
+// BayesNet variable. Assume variable assignments are enumerated ints
+struct Variable {
+    Id int // Unique variable identity
+    Value int // Enumerated value
+    Domain []int
+    Neighbors []*Variable
+    CPT map[string][]float // Map a string to an array of float values
+}
+
+// Bayesian Network, Vars a list of variables in topological order
+struct BayesNet {
+    Vars []Variable
+}
+
+// EnumerationAsk returns a distribution over values of X (int encoding)
+func EnumerationAsk(X Variable, e []Variable, net BayesNet) map[int]float {
+    Q := make(map[int]float)
+    for x := X.Domain {
+   	 Xt = X
+   	 Xt.Value = x
+   	 et = append(e, Xt)
+   	 Q[x] = EnumerateAll(net.Vars, et)
+    }
+    return Normalize(Q)
+}
+
+func EnumerateAll(netVars []Variable, e []Variable) float {
+    if len(vars) <= 0 {
+   	 return 1.o
+    }
+    Y = netVars[0]
+    if ismember(Y, e) {
+   	 return Y.PParents(ey)*EnumerateAll(netVars[1:], e)
+    } else {
+   	 var sum float64
+   	 for y := range Y.Dom {
+   		 Yt = Y
+   		 Yt.Value = y
+   		 ey = append(e, Yt)
+ YDist := Y.ProbParents(ey)
+   		 sum += YDist[y]*EnumerateAll(netVars[1:], ey)
+   	 }
+   	 return sum
+    }
+}
+
+// Computes the conditional probability given parents’ assignment in
+//  the variable assignment argument
+func (var Variable) ProbParents(vAssign []Variable) float {
+// Get parent assignment in string form
+var parVal string
+for i, v := range var.Parents {
+// Append variable assignment to parVal. find() returns the
+//  first element whose contents correspond to v.
+parVal = append(parVal, toString(vAssign.find(v).Value))
+}
+return var.CPT[parVal]
+}
+
+```
 
 ## Decision Tree
 
@@ -476,4 +1046,8 @@ def main():
 
 https://www.bogotobogo.com/python/python_Neural_Networks_Backpropagation_for_XOR_using_one_hidden_layer.php
 https://www.bogotobogo.com/python/files/NeuralNetworks/nn3.py
+
+## Chapter 20
+
+* TODO 
 
