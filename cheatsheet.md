@@ -70,6 +70,57 @@ def shuffled(iterable):
     random.shuffle(items)
     return items
 
+
+class DecisionFork:
+    """A fork of a decision tree holds an attribute to test, and a dict
+    of branches, one for each of the attribute's values."""
+
+    def __init__(self, attr, attrname=None, default_child=None, branches=None):
+        """Initialize by saying what attribute this node tests."""
+        self.attr = attr
+        self.attrname = attrname or attr
+        self.default_child = default_child
+        self.branches = branches or {}
+
+    def __call__(self, example):
+        """Given an example, classify it using the attribute and the branches."""
+        attrvalue = example[self.attr]
+        if attrvalue in self.branches:
+            return self.branches[attrvalue](example)
+        else:
+            # return default class when attribute is unknown
+            return self.default_child(example)
+
+    def add(self, val, subtree):
+        """Add a branch.  If self.attr = val, go to the given subtree."""
+        self.branches[val] = subtree
+
+    def display(self, indent=0):
+        name = self.attrname
+        print('Test', name)
+        for (val, subtree) in self.branches.items():
+            print(' ' * 4 * indent, name, '=', val, '==>', end=' ')
+            subtree.display(indent + 1)
+        print()   # newline
+
+    def __repr__(self):
+        return ('DecisionFork({0!r}, {1!r}, {2!r})'
+                .format(self.attr, self.attrname, self.branches))
+
+class DecisionLeaf:
+    """A leaf of a decision tree holds just a result."""
+
+    def __init__(self, result):
+        self.result = result
+
+    def __call__(self, example):
+        return self.result
+
+    def display(self, indent=0):
+        print('RESULT =', self.result)
+
+    def __repr__(self):
+        return repr(self.result)
 ```
 
 ### Example 1 - Main Code
@@ -162,6 +213,62 @@ def DecisionTreeLearner(dataset):
 ![Backpropagation Algo Steps](imgs/5.png)
 
 ![](imgs/10.png)
+
+## Utils
+
+```python
+def sigmoid_derivative(value):
+    return value * (1 - value)
+
+def sigmoid(x):
+    """Return activation value of x with sigmoid function"""
+    return 1 / (1 + math.exp(-x))
+
+def relu_derivative(value):
+	if value > 0:
+		return 1
+	else:
+		return 0
+
+def elu(x, alpha=0.01):
+	if x > 0:
+		return x
+	else:
+		return alpha * (math.exp(x) - 1)
+		
+def elu_derivative(value, alpha = 0.01):
+	if value > 0:
+		return 1
+	else:
+		return alpha * math.exp(value)
+
+def tanh(x):
+	return np.tanh(x)
+
+def tanh_derivative(value):
+	return (1 - (value ** 2))
+
+def leaky_relu(x, alpha = 0.01):
+	if x > 0:
+		return x
+	else:
+		return alpha * x
+
+def leaky_relu_derivative(value, alpha=0.01):
+	if value > 0:
+		return 1
+	else:
+		return alpha
+
+def relu(x):
+	return max(0, x)
+	
+def relu_derivative(value):
+	if value > 0:
+		return 1
+	else:
+		return 0
+```
 
 ## Network 
 
