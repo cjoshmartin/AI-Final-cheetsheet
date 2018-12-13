@@ -191,7 +191,7 @@ TODO
 
 TODO
 
-## LikelyHood Weighting 
+## Likelyhood Weighting 
 
 TODO
 
@@ -209,16 +209,35 @@ TODO
 
 ## Entropy 
 
+Entropy is a  measure of the uncertainty of a random variable; acquisition of information corresponds to a reduction.
+
+* coin is equally likely to come up heads or tails (0, 1) and counts as "1 bit" of entropy.
+* four-sided die has "2 bits" of entropy because it takes two bits to describe one of four equally probable choices.
+
+### Entropy equation
+
+$$H(V)=\sum_{k} P(V_k)*log_2(\frac{1}{P(V_k)}) = -\sum_{k} P(V_k)*log_2(P(V_k))$$
+
+* The entropy of a random variable $V$ is with values $V_k$, each with probability $P(V_k)$
+
+### Entropy of a Boolean
+$$ B(q)= -(q*log_2(q) + (1 - q)*log_2(1-q) )$$
+
+### Remainder(A)
+
+$=\sum_{k}^{d} P(V_k)*log_2(\frac{1}{P(V_k)})$
+---
+
 ```python
-    def information_gain(attr, examples): # Entropy
-        """Return the expected reduction in entropy from splitting by attr."""
-        def B(examples):
-            return information_content([count(target, v, examples)
-                                        for v in values[target]])
-        N = len(examples)
-        remainder = sum((len(examples_i)/N) * B(examples_i)
-                        for (v, examples_i) in split_by(attr, examples))
-        return B(examples) - remainder
+def information_gain(attr, examples): # Entropy
+    """Return the expected reduction in entropy from splitting by attr."""
+    def B(examples):
+        return information_content([count(target, v, examples)
+                                    for v in values[target]])
+    N = len(examples)
+    remainder = sum((len(examples_i)/N) * B(examples_i)
+                    for (v, examples_i) in split_by(attr, examples))
+    return B(examples) - remainder
 ```
 
 ![](imgs/4.png)
