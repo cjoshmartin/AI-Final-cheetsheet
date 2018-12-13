@@ -1266,6 +1266,7 @@ https://www.bogotobogo.com/python/files/NeuralNetworks/nn3.py
 
 ## Chapter 20
 
-* TODO 
-
 ### Naive Bayes
+
+![](imgs/josh_14.jpg)
+
