@@ -119,7 +119,7 @@ def DecisionTreeLearner(dataset):
 
     def information_gain(attr, examples): # Entropy
         """Return the expected reduction in entropy from splitting by attr."""
-        def J(examples):
+        def B(examples):
             return information_content([count(target, v, examples)
                                         for v in values[target]])
         N = len(examples)
@@ -148,7 +148,7 @@ def DecisionTreeLearner(dataset):
 ```python
     def information_gain(attr, examples): # Entropy
         """Return the expected reduction in entropy from splitting by attr."""
-        def J(examples):
+        def B(examples):
             return information_content([count(target, v, examples)
                                         for v in values[target]])
         N = len(examples)
