@@ -276,6 +276,62 @@ print(path)
 
 # Chapter 4 
 
+### Hill Climbing
+
+```python 
+from utils.queens import n_sized_board, h
+
+def main():
+    size = 8
+    board = n_sized_board(size)
+    input_board = list(board)
+    sort_over = 'h_cost'
+
+    def format(cost, value):
+        return {sort_over: cost, 'value': value}
+
+    def sorter(item):
+        return item[sort_over]
+
+    should_not_quit = True
+    counter = 0
+    while should_not_quit :
+        board_copy = list(board)
+        for i in range(size):
+            lowest_h = []
+
+            for j in range(size):
+                board_copy[i] = j
+                lowest_h.append(format(h(board_copy), j))
+
+            lowest_h.sort(key=sorter)
+            board_copy[i] = lowest_h[0]['value']
+
+        curr_h = h(board)
+        new_h = h(board_copy)
+
+        if counter > 50 or curr_h < new_h:
+            print('Local minimum')
+            should_not_quit = False
+        elif curr_h < 1:
+            should_not_quit = False
+        elif new_h < 1:
+            board = board_copy
+            should_not_quit = False
+        else:
+            board = board_copy
+
+        if curr_h == new_h:
+            counter = counter + 1
+
+    print('board: {}, cost: {}'.format(input_board, h(input_board)))
+    print('board: {}, cost: {}'.format(board, h(board)))
+
+while True:
+    main()
+```
+
+
 ## Genetic Algorithm
 
 ### Example 1
@@ -462,6 +518,190 @@ if __name__ == "__main__":
   exit(0)
 ```
 
+# Chapter 5
+
+## alpha_beta_pruning
+
+```python
+ from utils.Node import infinity
+from utils.Tree import tree_for_adv_search
+
+
+def alpha_beta_pruning(tree):
+    v = max_value(tree, -infinity, infinity)
+
+    return v
+
+
+def max_value(node, alpha, beta):
+    if node.is_leaf():
+        return node.value
+
+    v = - infinity
+
+    for child in node.children:
+        v = max(v, min_value(child, alpha, beta))
+
+        if v >= beta:
+            return v
+        alpha = max(alpha, v)
+
+
+    node.value = v
+    return v
+
+
+def min_value(node, alpha, beta):
+    if node.is_leaf():
+        return node.value
+
+    v = infinity
+
+    for child in node.children:
+        v = min(v, max_value(child, alpha, beta))
+
+        if v <= alpha:
+            return v
+
+        beta = min(beta, v)
+
+    node.value = v
+
+    return v
+
+
+tree = tree_for_adv_search()
+output = alpha_beta_pruning(tree)
+
+print('the output of this alpha beta pruning is {}'.format(output))<Paste>
+```
+
+## Mini Max
+
+```python
+
+from utils.Node import infinity
+from utils.Tree import tree_for_adv_search
+
+
+def mini_max(tree):
+    out = max_value(tree)
+    return out
+
+
+def min_value(node):
+    if node.is_leaf():
+        return node.value
+
+    v = infinity
+
+    for child in node.children:
+        v = min(v, max_value(child))
+
+    node.value = v
+
+    return v
+
+
+def max_value(node):
+    if node.is_leaf():
+        return node.value
+
+    v = -infinity
+
+    for child in node.children:
+        v = max(v, min_value(child))
+
+    node.value = v
+
+    return v
+
+tree = tree_for_adv_search()
+output = mini_max(tree)
+
+print(output)
+```
+
+# Chapter 6 
+
+## Backtracking 
+
+```python 
+from chapters.ch_6_constraint_satisfaction_problems.general import austria_graph
+
+
+def recursive_backtracking(node, eval_, has_visited, output_set):  # Generic algorithm
+    curr_node = node['node']
+    node_children = curr_node.children
+    node_name = curr_node.value
+
+    value = eval_(node)  # passed in function that makes the decision for our backtracking algorithm
+
+    if value is False:
+        return
+
+    has_visited.add(node_name)
+    output_set.append(tuple((node_name, value)))
+
+    if len(has_visited) == 6:
+        return output_set
+
+    for child in node_children:
+        if child['node'].value not in has_visited:
+            return recursive_backtracking(child, eval_, has_visited, output_set)
+
+    has_visited.remove(node_name)
+    return False
+
+
+def backtracking_search(csp, eval_):
+    has_visited = set()
+    output_set = []
+    return recursive_backtracking(csp, eval_, has_visited, output_set)
+
+
+def unused_colors(node):  # evaluate function
+    is_unused = {'red', 'blue', 'green'}
+
+    if node['color'] is not None:
+        is_unused.remove(node['color'])
+
+    for child in node['node'].children:
+
+        child_color = child['color']
+
+        if child_color is None:
+            continue
+
+        if is_unused is None or child_color not in is_unused:
+            return False
+
+        is_unused.remove(child_color)
+
+    if is_unused is None:
+        return False
+
+    node['color'] = next(iter(is_unused))
+
+    return node['color']
+
+
+head_node = austria_graph()  # map
+output = backtracking_search(
+    head_node,
+    unused_colors,
+)
+
+print(output)
+```
+
+
+## Arc 
+
+* TODO 
+
+---
+
 ## Queens.py
 
 ```python 
@@ -511,9 +751,7 @@ def h(board):
 
 * TODO 
 
-## Arc 
-
-* TODO 
+---
 
 ## Wampous world
 
@@ -554,6 +792,7 @@ $$=\sum_{B}^{\infty}\sum_{M}^{\infty}\sum_{E}^{\infty} \frac{P(b,e,j,m)}{P(a)}$$
 ![](imgs/9.png)
 
 ### Code
+
 ```go
 // BayesNet variable. Assume variable assignments are enumerated ints
 struct Variable {
@@ -752,28 +991,6 @@ def DecisionTreeLearner(dataset):
 
     return decision_tree_learning(dataset.examples, dataset.inputs)
 ```
-
-## Prior Samples 
-
-TODO
-
-## Rejection Sampling
-
-TODO
-
-## Likelyhood Weighting 
-
-TODO
-
-
-## Gibbs (MCMC)
-
-TODO
-
-<!--# Chapter 16-->
-
-<!--![](imgs/1.png)-->
-<!--![](imgs/2.png)-->
 
 # Chapter 18/20 Neural Networks 
 
@@ -1051,3 +1268,4 @@ https://www.bogotobogo.com/python/files/NeuralNetworks/nn3.py
 
 * TODO 
 
+### Naive Bayes
