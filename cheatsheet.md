@@ -225,8 +225,19 @@ $$ B(q)= -(q*log_2(q) + (1 - q)*log_2(1-q) )$$
 
 ### Remainder(A)
 
-$=\sum_{k}^{d} P(V_k)*log_2(\frac{1}{P(V_k)})$
----
+$Remainder(A)=\sum_{k}^{d}log_2(\frac{p_k + n_k}{p + n})*B(\frac{p_k}{p_k + n_k})$
+
+* $p$ positive cases 
+* $n$ negative cases 
+* $p_k$,$n_k$ per feature
+
+![](imgs/josh_12.png)
+
+### Information Gain
+
+$Gain(A)= B(\frac{p}{p+n}) - Remainder(A)$
+
+### The Codes
 
 ```python
 def information_gain(attr, examples): # Entropy
@@ -245,8 +256,9 @@ def information_gain(attr, examples): # Entropy
 ![Backpropagation Algo Steps](imgs/5.png)
 
 ![](imgs/10.png)
+![](imgs/josh_13.png)
 
-## Utils
+### Utils
 
 ```python
 def sigmoid_derivative(value):
