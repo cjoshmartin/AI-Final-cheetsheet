@@ -45,22 +45,87 @@ $$=\sum_{B}^{\infty}\sum_{M}^{\infty}\sum_{E}^{\infty} \frac{P(b,e,j,m)}{P(a)}$$
 ![](imgs/8.png)
 ![](imgs/9.png)
 
-# Chapter 14 - Decision Trees
+
+## Decision Tree
+
 https://github.com/random-forests/tutorials/blob/master/decision_tree.ipynb
 https://github.com/random-forests/tutorials/blob/master/decision_tree.py
 
 
-## Decision Tree
+### Example 1 - Utils 
 
-![](imgs/3.png)
+```python 
+identity = lambda x: x
 
-### Example 1
+def argmax_random_tie(seq, key=identity):
+    """Return an element with highest fn(seq[i]) score; break ties at random."""
+    return max(shuffled(seq), key=key)
 
+def shuffled(iterable):
+    """Randomly shuffle a copy of iterable."""
+    items = list(iterable)
+    random.shuffle(items)
+    return items
+
+
+class DecisionFork:
+    """A fork of a decision tree holds an attribute to test, and a dict
+    of branches, one for each of the attribute's values."""
+
+    def __init__(self, attr, attrname=None, default_child=None, branches=None):
+        """Initialize by saying what attribute this node tests."""
+        self.attr = attr
+        self.attrname = attrname or attr
+        self.default_child = default_child
+        self.branches = branches or {}
+
+    def __call__(self, example):
+        """Given an example, classify it using the attribute and the branches."""
+        attrvalue = example[self.attr]
+        if attrvalue in self.branches:
+            return self.branches[attrvalue](example)
+        else:
+            # return default class when attribute is unknown
+            return self.default_child(example)
+
+    def add(self, val, subtree):
+        """Add a branch.  If self.attr = val, go to the given subtree."""
+        self.branches[val] = subtree
+
+    def display(self, indent=0):
+        name = self.attrname
+        print('Test', name)
+        for (val, subtree) in self.branches.items():
+            print(' ' * 4 * indent, name, '=', val, '==>', end=' ')
+            subtree.display(indent + 1)
+        print()   # newline
+
+    def __repr__(self):
+        return ('DecisionFork({0!r}, {1!r}, {2!r})'
+                .format(self.attr, self.attrname, self.branches))
+
+class DecisionLeaf:
+    """A leaf of a decision tree holds just a result."""
+
+    def __init__(self, result):
+        self.result = result
+
+    def __call__(self, example):
+        return self.result
+
+    def display(self, indent=0):
+        print('RESULT =', self.result)
+
+    def __repr__(self):
+        return repr(self.result)
+```
+
+### Example 1 - Main Code
+
+![](imgs/josh_11.png)
 
 ```python 
 def DecisionTreeLearner(dataset):
-    """[Figure 18.5]"""
-
     target, values = dataset.target, dataset.values
 
     def decision_tree_learning(examples, attrs, parent_examples=()):
@@ -100,15 +165,15 @@ def DecisionTreeLearner(dataset):
         return argmax_random_tie(attrs,
                                  key=lambda a: information_gain(a, examples))
 
-    def information_gain(attr, examples):
+    def information_gain(attr, examples): # Entropy
         """Return the expected reduction in entropy from splitting by attr."""
-        def I(examples):
+        def B(examples):
             return information_content([count(target, v, examples)
                                         for v in values[target]])
         N = len(examples)
-        remainder = sum((len(examples_i)/N) * I(examples_i)
+        remainder = sum((len(examples_i)/N) * B(examples_i)
                         for (v, examples_i) in split_by(attr, examples))
-        return I(examples) - remainder
+        return B(examples) - remainder
 
     def split_by(attr, examples):
         """Return a list of (val, examples) pairs for each val of attr."""
@@ -118,23 +183,136 @@ def DecisionTreeLearner(dataset):
     return decision_tree_learning(dataset.examples, dataset.inputs)
 ```
 
+## Prior Samples 
 
-# Chapter 16
+TODO
 
-![](imgs/1.png)
-![](imgs/2.png)
+## Rejection Sampling
+
+TODO
+
+## Likelyhood Weighting 
+
+TODO
+
+
+## Gibbs (MCMC)
+
+TODO
+
+<!--# Chapter 16-->
+
+<!--![](imgs/1.png)-->
+<!--![](imgs/2.png)-->
 
 # Chapter 18/20 Neural Networks 
 
 ## Entropy 
 
-    idk man
+Entropy is a  measure of the uncertainty of a random variable; acquisition of information corresponds to a reduction.
+
+* coin is equally likely to come up heads or tails (0, 1) and counts as "1 bit" of entropy.
+* four-sided die has "2 bits" of entropy because it takes two bits to describe one of four equally probable choices.
+
+### Entropy equation
+
+$$H(V)=\sum_{k} P(V_k)*log_2(\frac{1}{P(V_k)}) = -\sum_{k} P(V_k)*log_2(P(V_k))$$
+
+* The entropy of a random variable $V$ is with values $V_k$, each with probability $P(V_k)$
+
+### Entropy of a Boolean
+$$ B(q)= -(q*log_2(q) + (1 - q)*log_2(1-q) )$$
+
+### Remainder(A)
+
+$Remainder(A)=\sum_{k}^{d}log_2(\frac{p_k + n_k}{p + n})*B(\frac{p_k}{p_k + n_k})$
+
+* $p$ positive cases 
+* $n$ negative cases 
+* $p_k$,$n_k$ per feature
+
+![](imgs/josh_12.png)
+
+### Information Gain
+
+$Gain(A)= B(\frac{p}{p+n}) - Remainder(A)$
+
+### The Codes
+
+```python
+def information_gain(attr, examples): # Entropy
+    """Return the expected reduction in entropy from splitting by attr."""
+    def B(examples):
+        return information_content([count(target, v, examples)
+                                    for v in values[target]])
+    N = len(examples)
+    remainder = sum((len(examples_i)/N) * B(examples_i)
+                    for (v, examples_i) in split_by(attr, examples))
+    return B(examples) - remainder
+```
 
 ![](imgs/4.png)
 
 ![Backpropagation Algo Steps](imgs/5.png)
 
 ![](imgs/10.png)
+![](imgs/josh_13.png)
+
+### Utils
+
+```python
+def sigmoid_derivative(value):
+    return value * (1 - value)
+
+def sigmoid(x):
+    """Return activation value of x with sigmoid function"""
+    return 1 / (1 + math.exp(-x))
+
+def relu_derivative(value):
+	if value > 0:
+		return 1
+	else:
+		return 0
+
+def elu(x, alpha=0.01):
+	if x > 0:
+		return x
+	else:
+		return alpha * (math.exp(x) - 1)
+		
+def elu_derivative(value, alpha = 0.01):
+	if value > 0:
+		return 1
+	else:
+		return alpha * math.exp(value)
+
+def tanh(x):
+	return np.tanh(x)
+
+def tanh_derivative(value):
+	return (1 - (value ** 2))
+
+def leaky_relu(x, alpha = 0.01):
+	if x > 0:
+		return x
+	else:
+		return alpha * x
+
+def leaky_relu_derivative(value, alpha=0.01):
+	if value > 0:
+		return 1
+	else:
+		return alpha
+
+def relu(x):
+	return max(0, x)
+	
+def relu_derivative(value):
+	if value > 0:
+		return 1
+	else:
+		return 0
+```
 
 ## Network 
 
