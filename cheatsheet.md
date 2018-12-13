@@ -45,14 +45,11 @@ $$=\sum_{B}^{\infty}\sum_{M}^{\infty}\sum_{E}^{\infty} \frac{P(b,e,j,m)}{P(a)}$$
 ![](imgs/8.png)
 ![](imgs/9.png)
 
-# Chapter 14 - Decision Trees
-https://github.com/random-forests/tutorials/blob/master/decision_tree.ipynb
-https://github.com/random-forests/tutorials/blob/master/decision_tree.py
-
 
 ## Decision Tree
 
-<!--![](imgs/3.png)-->
+https://github.com/random-forests/tutorials/blob/master/decision_tree.ipynb
+https://github.com/random-forests/tutorials/blob/master/decision_tree.py
 
 
 ### Example 1 - Utils 
@@ -186,6 +183,22 @@ def DecisionTreeLearner(dataset):
     return decision_tree_learning(dataset.examples, dataset.inputs)
 ```
 
+## Prior Samples 
+
+TODO
+
+## Rejection Sampling
+
+TODO
+
+## LikelyHood Weighting 
+
+TODO
+
+
+## Gibbs (MCMC)
+
+TODO
 
 <!--# Chapter 16-->
 
